@@ -1,165 +1,171 @@
-
 <!DOCTYPE html>
 <html lang="id">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>BUS BUILDER 3D</title>
 
 <script type="importmap">
 {
- "imports":{
-  "three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
-  "three/addons/":"https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
- }
+  "imports": {
+    "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+    "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+  }
 }
 </script>
 
 <style>
 *{box-sizing:border-box}
 body{
- margin:0;background:#080e18;color:#f1f5f9;
- font-family:Arial,sans-serif
+  margin:0;background:#080e18;color:#f1f5f9;
+  font-family:Arial,sans-serif
 }
 button,input{font:inherit}
 button{cursor:pointer}
 .header{
- padding:17px 22px;background:#111d30;
- border-bottom:1px solid #263c56;
- display:flex;justify-content:space-between;
- align-items:center;gap:12px;flex-wrap:wrap
+  padding:17px 22px;background:#111d30;
+  border-bottom:1px solid #263c56;
+  display:flex;justify-content:space-between;
+  align-items:center;gap:12px;flex-wrap:wrap
 }
-.logo{font-size:20px;font-weight:900;color:#38bdf8}
+.logo{font-size:21px;font-weight:900;color:#38bdf8}
 .logo small{display:block;font-size:10px;color:#94a3b8;margin-top:5px}
 .stats{display:flex;gap:9px;flex-wrap:wrap}
 .stat{
- background:#1c2b40;border:1px solid #354b64;
- padding:10px 14px;border-radius:10px;font-size:12px
+  background:#1c2b40;border:1px solid #354b64;
+  padding:10px 14px;border-radius:10px;font-size:12px
 }
 .stat b{display:block;font-size:15px;margin-top:4px}
 .nav{
- display:flex;gap:8px;padding:13px 18px;
- overflow-x:auto;background:#0c1523
+  display:flex;gap:8px;padding:13px 18px;
+  overflow-x:auto;background:#0c1523
 }
 .nav button{
- background:#1b2b40;color:#cbd5e1;
- border:1px solid #35465d;border-radius:9px;
- padding:11px 16px;white-space:nowrap
+  background:#1b2b40;color:#cbd5e1;
+  border:1px solid #35465d;border-radius:9px;
+  padding:11px 16px;white-space:nowrap
 }
 .nav button.active{background:#0369a1;color:white;border-color:#38bdf8}
 .container{max-width:1450px;margin:auto;padding:17px}
 .page{display:none}
 .page.active{display:block}
 .panel{
- background:#111e30;border:1px solid #2b405a;
- border-radius:14px;padding:17px;margin-bottom:14px
+  background:#111e30;border:1px solid #2b405a;
+  border-radius:14px;padding:17px;margin-bottom:14px
 }
 .panel h2,.panel h3{margin-top:0}
 .muted{color:#94a3b8;font-size:12px;line-height:1.6}
 .blue{color:#38bdf8}
 .green{color:#4ade80}
 .layout{
- display:grid;grid-template-columns:minmax(0,1fr) 300px;
- gap:14px
+  display:grid;grid-template-columns:minmax(0,1fr) 300px;
+  gap:14px
 }
 .viewer{
- height:480px;background:
- radial-gradient(ellipse at center,#273d57,#0b1423 75%);
- border:1px solid #344a63;border-radius:14px;
- overflow:hidden;position:relative
+  height:480px;background:radial-gradient(ellipse at center,#273d57,#0b1423 75%);
+  border:1px solid #344a63;border-radius:14px;
+  overflow:hidden;position:relative
 }
 #scene{width:100%;height:100%;display:block}
 .viewer-label{
- position:absolute;top:13px;left:13px;
- background:#081321d9;padding:9px 12px;
- border-radius:8px;font-size:11px;color:#7dd3fc
+  position:absolute;top:13px;left:13px;
+  background:#081321d9;padding:9px 12px;
+  border-radius:8px;font-size:11px;color:#7dd3fc
 }
 .controls{
- position:absolute;bottom:12px;left:12px;right:12px;
- display:flex;gap:7px;flex-wrap:wrap
+  position:absolute;bottom:12px;left:12px;right:12px;
+  display:flex;gap:7px;flex-wrap:wrap
 }
 .controls button{
- background:#101d2eea;color:white;
- border:1px solid #405775;padding:9px 12px;
- border-radius:8px;font-size:11px
+  background:#101d2eea;color:white;
+  border:1px solid #405775;padding:9px 12px;
+  border-radius:8px;font-size:11px
 }
 .controls button:hover{background:#075985}
 .btn{
- padding:11px 14px;border:0;border-radius:8px;
- color:white;background:#0284c7;font-weight:bold
+  padding:11px 14px;border:0;border-radius:8px;
+  color:white;background:#0284c7;font-weight:bold
 }
 .btn.green{background:#059669}
 .btn.red{background:#b91c1c}
 .btn.gray{background:#334155}
+.btn.gold{background:#b7791f}
 .btn:disabled{opacity:.4;cursor:not-allowed}
 .full{width:100%}
 .progress{
- height:10px;background:#2b3d54;border-radius:20px;
- overflow:hidden;margin:12px 0
+  height:10px;background:#2b3d54;border-radius:20px;
+  overflow:hidden;margin:12px 0
 }
 .progress span{
- display:block;width:0;height:100%;
- background:linear-gradient(90deg,#0284c7,#4ade80);
- transition:.3s
+  display:block;width:0;height:100%;
+  background:linear-gradient(90deg,#0284c7,#4ade80);
+  transition:.3s
 }
 .item-grid{
- display:grid;grid-template-columns:repeat(3,minmax(0,1fr));
- gap:12px
+  display:grid;grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:12px
 }
 .item{
- background:#17263b;border:1px solid #344b65;
- border-radius:12px;padding:14px
+  background:#17263b;border:1px solid #344b65;
+  border-radius:12px;padding:14px
 }
-.item .emoji{font-size:28px}
+.item .emoji{font-size:30px}
 .item h3{font-size:14px;margin:10px 0 5px}
 .item p{font-size:11px;color:#9aadc4;min-height:32px;line-height:1.5}
 .item .price{color:#38bdf8;font-weight:bold;font-size:13px}
 .item button{width:100%;margin-top:9px}
 .parts-row{
- display:flex;justify-content:space-between;
- align-items:center;gap:10px;padding:12px;
- background:#19283c;border:1px solid #354961;
- border-radius:10px;margin-bottom:8px
+  display:flex;justify-content:space-between;
+  align-items:center;gap:10px;padding:12px;
+  background:#19283c;border:1px solid #354961;
+  border-radius:10px;margin-bottom:8px
 }
 .parts-row b{font-size:12px}
 .parts-row small{display:block;color:#9aadc4;margin-top:4px}
 .parts-row button{font-size:11px;padding:9px}
 .swatches{display:flex;gap:12px;flex-wrap:wrap}
 .swatch{
- width:39px;height:39px;border-radius:50%;
- border:3px solid #64748b
+  width:39px;height:39px;border-radius:50%;
+  border:3px solid #64748b
 }
 .swatch.selected{outline:3px solid #38bdf8;outline-offset:3px}
 input{
- width:100%;padding:12px;background:#0c1727;
- border:1px solid #344b65;color:white;
- border-radius:8px;margin:8px 0
+  width:100%;padding:12px;background:#0c1727;
+  border:1px solid #344b65;color:white;
+  border-radius:8px;margin:8px 0
 }
 .notice{
- padding:13px;background:#102c41;
- border:1px solid #155e83;border-radius:10px;
- color:#bae6fd;font-size:12px;line-height:1.7
+  padding:13px;background:#102c41;
+  border:1px solid #155e83;border-radius:10px;
+  color:#bae6fd;font-size:12px;line-height:1.7
 }
+.challenge{
+  background:#17263b;border:1px solid #344b65;
+  border-radius:12px;padding:16px;margin-bottom:12px
+}
+.challenge h3{margin:0 0 8px}
+.challenge .reward{color:#4ade80;font-weight:bold;margin:12px 0}
+.challenge.done{border-color:#059669}
 .toast{
- position:fixed;bottom:20px;left:50%;
- transform:translate(-50%,100px);
- background:#12334a;border:1px solid #38bdf8;
- padding:13px 20px;border-radius:10px;
- transition:.3s;z-index:10;text-align:center;
- max-width:90%;font-size:13px
+  position:fixed;bottom:20px;left:50%;
+  transform:translate(-50%,100px);
+  background:#12334a;border:1px solid #38bdf8;
+  padding:13px 20px;border-radius:10px;
+  transition:.3s;z-index:10;text-align:center;
+  max-width:90%;font-size:13px
 }
 .toast.show{transform:translate(-50%,0)}
 @media(max-width:850px){
- .layout{grid-template-columns:1fr}
- .viewer{height:370px}
- .item-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .layout{grid-template-columns:1fr}
+  .viewer{height:370px}
+  .item-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
 }
 @media(max-width:480px){
- .container{padding:10px}
- .viewer{height:300px}
- .header{padding:13px}
- .item-grid{gap:8px}
- .item{padding:10px}
+  .container{padding:10px}
+  .viewer{height:300px}
+  .header{padding:13px}
+  .item-grid{gap:8px}
+  .item{padding:10px}
 }
 </style>
 </head>
@@ -167,652 +173,934 @@ input{
 <body>
 
 <header class="header">
- <div class="logo">
-  🚌 BUS BUILDER 3D
-  <small>BUS MECHANIC & CUSTOM WORKSHOP</small>
- </div>
- <div class="stats">
-  <div class="stat">💰 UANG<b id="money">Rp 5.000.000</b></div>
-  <div class="stat">🔩 SPAREPART<b id="stock">0</b></div>
-  <div class="stat">🏁 PROGRES<b id="percent">0%</b></div>
- </div>
+  <div class="logo">
+    🚌 BUS BUILDER 3D
+    <small>BUS MECHANIC & CUSTOM WORKSHOP</small>
+  </div>
+
+  <div class="stats">
+    <div class="stat">💰 UANG<b id="money">Rp 5.000.000</b></div>
+    <div class="stat">🔩 SPAREPART<b id="stock">0</b></div>
+    <div class="stat">🏁 PROGRES<b id="percent">0%</b></div>
+  </div>
 </header>
 
 <nav class="nav">
- <button class="active" data-page="garage">🏠 Garasi 3D</button>
- <button data-page="shop">🛒 Toko Sparepart</button>
- <button data-page="install">🔧 Bongkar Pasang</button>
- <button data-page="interior">🪑 Interior</button>
- <button data-page="paint">🎨 Cat & Desain</button>
+  <button class="active" data-page="garage">🏠 Garasi 3D</button>
+  <button data-page="shop">🛒 Toko Sparepart</button>
+  <button data-page="install">🔧 Bongkar Pasang</button>
+  <button data-page="challenges">🏆 Tantangan</button>
+  <button data-page="interior">🪑 Interior</button>
+  <button data-page="paint">🎨 Cat & Desain</button>
 </nav>
 
 <main class="container">
 
 <!-- GARASI -->
 <section class="page active" id="garage">
- <div class="layout">
-  <div>
-   <div class="viewer">
-    <canvas id="scene"></canvas>
-    <div class="viewer-label">● 3D BUS WORKSHOP</div>
-    <div class="controls">
-     <button onclick="cameraView('front')">DEPAN</button>
-     <button onclick="cameraView('side')">SAMPING</button>
-     <button onclick="cameraView('rear')">BELAKANG</button>
-     <button onclick="cameraView('top')">ATAS</button>
-     <button onclick="toggleRotate()">⟳ PUTAR</button>
-    </div>
-   </div>
-   <div class="panel">
-    <h3>📊 Status Pembangunan Bus</h3>
-    <div style="display:flex;justify-content:space-between;font-size:12px">
-     <b>Komponen terpasang</b><b id="installedCount">0 / 13</b>
-    </div>
-    <div class="progress"><span id="progress"></span></div>
-    <p class="muted" id="status">Mulai membeli dan memasang sparepart bus.</p>
-   </div>
-  </div>
+  <div class="layout">
+    <div>
+      <div class="viewer">
+        <canvas id="scene"></canvas>
+        <div class="viewer-label">● 3D BUS WORKSHOP</div>
+        <div class="controls">
+          <button onclick="cameraView('front')">DEPAN</button>
+          <button onclick="cameraView('side')">SAMPING</button>
+          <button onclick="cameraView('rear')">BELAKANG</button>
+          <button onclick="cameraView('top')">ATAS</button>
+          <button onclick="toggleRotate()">⟳ PUTAR</button>
+        </div>
+      </div>
 
-  <div>
-   <div class="panel">
-    <h3>🚍 Identitas Bus</h3>
-    <b id="busName">ZAMM TRANS</b>
-    <p class="muted">Coach Bus • Custom Build</p>
-    <div class="parts-row">
-     <div><b>Mesin</b><small id="engineStatus">Belum terpasang</small></div>
-     <span id="engineIcon">❌</span>
+      <div class="panel">
+        <h3>📊 Status Pembangunan Bus</h3>
+        <div style="display:flex;justify-content:space-between;font-size:12px">
+          <b>Komponen terpasang</b>
+          <b id="installedCount">0 / 13</b>
+        </div>
+        <div class="progress"><span id="progress"></span></div>
+        <p class="muted" id="status">Mulai membeli dan memasang sparepart bus.</p>
+      </div>
     </div>
-    <div class="parts-row">
-     <div><b>Roda</b><small id="wheelStatus">Belum terpasang</small></div>
-     <span id="wheelIcon">❌</span>
-    </div>
-    <div class="parts-row">
-     <div><b>Interior</b><small id="seatStatus">Belum terpasang</small></div>
-     <span id="seatIcon">❌</span>
-    </div>
-   </div>
 
-   <div class="panel">
-    <h3>⚡ Aksi Cepat</h3>
-    <button class="btn full" onclick="go('shop')">🛒 BELI SPAREPART</button>
-    <br><br>
-    <button class="btn green full" onclick="go('install')">🔧 PASANG KOMPONEN</button>
-    <br><br>
-    <button class="btn gray full" onclick="go('interior')">🪑 LIHAT INTERIOR</button>
-   </div>
+    <div>
+      <div class="panel">
+        <h3>🚍 Identitas Bus</h3>
+        <b id="busName">ZAMM TRANS</b>
+        <p class="muted">Coach Bus • Custom Build</p>
+
+        <div class="parts-row">
+          <div><b>Mesin</b><small id="engineStatus">Belum terpasang</small></div>
+          <span id="engineIcon">❌</span>
+        </div>
+        <div class="parts-row">
+          <div><b>Roda</b><small id="wheelStatus">Belum terpasang</small></div>
+          <span id="wheelIcon">❌</span>
+        </div>
+        <div class="parts-row">
+          <div><b>Interior</b><small id="seatStatus">Belum terpasang</small></div>
+          <span id="seatIcon">❌</span>
+        </div>
+      </div>
+
+      <div class="panel">
+        <h3>⚡ Aksi Cepat</h3>
+        <button class="btn full" onclick="go('shop')">🛒 BELI SPAREPART</button>
+        <br><br>
+        <button class="btn green full" onclick="go('install')">🔧 PASANG KOMPONEN</button>
+        <br><br>
+        <button class="btn gold full" onclick="go('challenges')">🏆 LIHAT TANTANGAN</button>
+      </div>
+    </div>
   </div>
- </div>
 </section>
 
 <!-- TOKO -->
 <section class="page" id="shop">
- <div class="panel">
-  <h2>🛒 Toko Sparepart Bus</h2>
-  <p class="muted">Beli komponen menggunakan uang virtual. Semua barang yang dibeli akan masuk ke inventaris.</p>
-  <div class="notice">
-   💡 Cara membeli: tekan tombol BELI. Setelah itu buka menu Bongkar Pasang untuk memasang komponen ke bus.
+  <div class="panel">
+    <h2>🛒 Toko Sparepart Bus</h2>
+    <p class="muted">Beli komponen menggunakan uang virtual. Barang yang dibeli akan masuk ke inventaris.</p>
+    <div class="notice">
+      💡 Tekan tombol BELI untuk membeli barang. Setelah itu buka menu Bongkar Pasang untuk memasangnya ke bus.
+    </div>
   </div>
- </div>
- <div class="item-grid" id="shopItems"></div>
+  <div class="item-grid" id="shopItems"></div>
 </section>
 
-<!-- INSTALL -->
+<!-- BONGKAR PASANG -->
 <section class="page" id="install">
- <div class="panel">
-  <h2>🔧 Workshop Bongkar Pasang</h2>
-  <p class="muted">Pasang komponen yang sudah dibeli. Komponen yang dilepas akan kembali ke inventaris.</p>
-  <div class="notice">⚙️ Sistem ini menggunakan inventaris sungguhan dalam permainan. Kamu tidak bisa memasang barang jika belum membelinya.</div>
- </div>
- <div class="panel">
-  <h3>📦 Inventaris dan Pemasangan</h3>
-  <div id="installItems"></div>
- </div>
+  <div class="panel">
+    <h2>🔧 Workshop Bongkar Pasang</h2>
+    <p class="muted">Pasang komponen yang sudah dibeli. Komponen yang dilepas akan kembali ke inventaris.</p>
+    <div class="notice">Kamu tidak bisa memasang barang jika belum membelinya.</div>
+  </div>
+  <div class="panel">
+    <h3>📦 Inventaris dan Pemasangan</h3>
+    <div id="installItems"></div>
+  </div>
+</section>
+
+<!-- TANTANGAN -->
+<section class="page" id="challenges">
+  <div class="panel">
+    <h2>🏆 Challenge Mode</h2>
+    <p class="muted">Selesaikan tantangan dengan memasang sparepart ke bus untuk mendapatkan uang tambahan.</p>
+    <div class="notice">Selesaikan tugas yang diminta, lalu tekan tombol AMBIL HADIAH. Setiap hadiah hanya bisa diambil satu kali.</div>
+  </div>
+  <div id="challengeItems"></div>
 </section>
 
 <!-- INTERIOR -->
 <section class="page" id="interior">
- <div class="panel">
-  <h2>🪑 Interior Bus</h2>
-  <p class="muted">Lihat komponen interior dan aktifkan mode transparan untuk memeriksa kabin.</p>
-  <button class="btn green" onclick="toggleInterior()">👁 LIHAT BAGIAN DALAM BUS</button>
-  <button class="btn gray" onclick="cameraView('top')">KAMERA ATAS</button>
- </div>
- <div class="viewer" style="height:430px">
-  <canvas id="sceneInterior"></canvas>
-  <div class="viewer-label">INTERIOR INSPECTION MODE</div>
- </div>
- <div class="panel">
-  <h3>Daftar Interior</h3>
-  <div id="interiorList"></div>
- </div>
-</section>
-
-<!-- PAINT -->
-<section class="page" id="paint">
- <div class="layout">
-  <div class="viewer">
-   <canvas id="scenePaint"></canvas>
-   <div class="viewer-label">CUSTOM PAINT PREVIEW</div>
+  <div class="panel">
+    <h2>🪑 Interior Bus</h2>
+    <p class="muted">Periksa bagian dalam bus. Aktifkan mode transparan untuk melihat komponen kabin.</p>
+    <button class="btn green" onclick="toggleInterior()">👁 BUKA / TUTUP INSPEKSI</button>
+    <button class="btn gray" onclick="cameraView('top')">KAMERA ATAS</button>
   </div>
   <div class="panel">
-   <h2>🎨 Cat dan Desain Bus</h2>
-   <label class="muted">Nama bus</label>
-   <input id="nameInput" placeholder="Nama bus..." maxlength="25">
-   <button class="btn full" onclick="saveName()">SIMPAN NAMA</button>
-   <br><br>
-   <h3>Warna bodi</h3>
-   <div class="swatches" id="colors"></div>
-   <br>
-   <h3>Warna aksen</h3>
-   <div class="swatches" id="accents"></div>
-   <br>
-   <p class="muted">Pilih warna untuk melihat perubahan langsung pada model 3D.</p>
+    <h3>Daftar Interior</h3>
+    <div id="interiorList"></div>
   </div>
- </div>
+</section>
+
+<!-- CAT -->
+<section class="page" id="paint">
+  <div class="layout">
+    <div class="panel">
+      <h2>🎨 Cat dan Desain Bus</h2>
+      <label class="muted">Nama bus</label>
+      <input id="nameInput" placeholder="Nama bus..." maxlength="25">
+      <button class="btn full" onclick="saveName()">SIMPAN NAMA</button>
+      <br><br>
+      <h3>Warna bodi</h3>
+      <div class="swatches" id="colors"></div>
+      <br>
+      <h3>Warna aksen</h3>
+      <div class="swatches" id="accents"></div>
+      <br>
+      <p class="muted">Pilih warna untuk mengubah tampilan bus 3D.</p>
+    </div>
+  </div>
 </section>
 
 </main>
 
 <div class="toast" id="toast"></div>
 
-<script type="module">
-import * as THREE from 'three';
-import {OrbitControls} from 'three/addons/controls/OrbitControls.js';
-
-/* ================= DATA GAME ================= */
-
-const catalog=[
- {id:'engine',name:'Mesin Diesel',emoji:'⚙️',price:850000,desc:'Mesin utama penggerak bus.',group:'exterior'},
- {id:'wheel',name:'Set Roda Bus',emoji:'🛞',price:350000,desc:'Empat roda lengkap dengan velg.',group:'exterior'},
- {id:'glass',name:'Kaca Jendela',emoji:'🪟',price:250000,desc:'Kaca samping dan kaca depan.',group:'exterior'},
- {id:'headlight',name:'Lampu Depan',emoji:'💡',price:120000,desc:'Lampu utama bagian depan.',group:'exterior'},
- {id:'mirror',name:'Spion Bus',emoji:'🪞',price:95000,desc:'Sepasang spion samping.',group:'exterior'},
- {id:'bumper',name:'Bumper Depan',emoji:'🚍',price:150000,desc:'Pelindung bagian depan bus.',group:'exterior'},
- {id:'grille',name:'Grille Depan',emoji:'▦',price:85000,desc:'Grille ventilasi depan.',group:'exterior'},
- {id:'door',name:'Pintu Bus',emoji:'🚪',price:180000,desc:'Pintu penumpang samping.',group:'exterior'},
- {id:'taillight',name:'Lampu Belakang',emoji:'🔴',price:95000,desc:'Lampu belakang bus.',group:'exterior'},
- {id:'ac',name:'AC Atap',emoji:'❄️',price:200000,desc:'Pendingin udara kabin.',group:'exterior'},
- {id:'seat',name:'Set Kursi Penumpang',emoji:'💺',price:300000,desc:'Sepuluh kursi penumpang.',group:'interior'},
- {id:'dashboard',name:'Dashboard',emoji:'🎛️',price:175000,desc:'Panel kontrol pengemudi.',group:'interior'},
- {id:'steering',name:'Setir Bus',emoji:'⭕',price:90000,desc:'Setir kemudi pengemudi.',group:'interior'}
+<!-- GAME SYSTEM: TIDAK BERGANTUNG PADA 3D -->
+<script>
+const catalog = [
+  {id:'engine',name:'Mesin Diesel',emoji:'⚙️',price:850000,desc:'Mesin utama penggerak bus.',group:'exterior'},
+  {id:'wheel',name:'Set Roda Bus',emoji:'🛞',price:350000,desc:'Empat roda lengkap dengan velg.',group:'exterior'},
+  {id:'glass',name:'Kaca Jendela',emoji:'🪟',price:250000,desc:'Kaca samping dan kaca depan.',group:'exterior'},
+  {id:'headlight',name:'Lampu Depan',emoji:'💡',price:120000,desc:'Lampu utama bagian depan.',group:'exterior'},
+  {id:'mirror',name:'Spion Bus',emoji:'🪞',price:95000,desc:'Sepasang spion samping.',group:'exterior'},
+  {id:'bumper',name:'Bumper Depan',emoji:'🚍',price:150000,desc:'Pelindung bagian depan bus.',group:'exterior'},
+  {id:'grille',name:'Grille Depan',emoji:'▦',price:85000,desc:'Grille ventilasi depan.',group:'exterior'},
+  {id:'door',name:'Pintu Bus',emoji:'🚪',price:180000,desc:'Pintu penumpang samping.',group:'exterior'},
+  {id:'taillight',name:'Lampu Belakang',emoji:'🔴',price:95000,desc:'Lampu belakang bus.',group:'exterior'},
+  {id:'ac',name:'AC Atap',emoji:'❄️',price:200000,desc:'Pendingin udara kabin.',group:'exterior'},
+  {id:'seat',name:'Set Kursi Penumpang',emoji:'💺',price:300000,desc:'Sepuluh kursi penumpang.',group:'interior'},
+  {id:'dashboard',name:'Dashboard',emoji:'🎛️',price:175000,desc:'Panel kontrol pengemudi.',group:'interior'},
+  {id:'steering',name:'Setir Bus',emoji:'⭕',price:90000,desc:'Setir kemudi pengemudi.',group:'interior'}
 ];
 
-const defaults={
- money:5000000,
- name:'ZAMM TRANS',
- color:'#facc15',
- accent:'#dc2626',
- inventory:{},
- installed:[],
- interiorOpen:false
+const defaults = {
+  money:5000000,
+  name:'ZAMM TRANS',
+  color:'#facc15',
+  accent:'#dc2626',
+  inventory:{},
+  installed:[],
+  claimed:[],
+  interiorOpen:false
 };
 
 let saveData;
-try{
- saveData={...defaults,...JSON.parse(localStorage.getItem('busBuilderSave'))};
- saveData.inventory={...defaults.inventory,...saveData.inventory};
-}catch(e){saveData={...defaults,inventory:{},installed:[]};}
 
-const installed= new Set(saveData.installed||[]);
-let rotating=false;
-let scenes=[];
-let models=[];
+try {
+  const saved = JSON.parse(localStorage.getItem('busBuilderSave') || 'null');
+  saveData = {
+    ...defaults,
+    ...(saved || {}),
+    inventory:{...defaults.inventory,...(saved?.inventory || {})},
+    installed:Array.isArray(saved?.installed) ? saved.installed : [],
+    claimed:Array.isArray(saved?.claimed) ? saved.claimed : []
+  };
+} catch(error) {
+  saveData = {...defaults,inventory:{},installed:[],claimed:[]};
+}
+
+let installed = new Set(saveData.installed);
 let toastTimer;
 
-function persist(){
- saveData.installed=[...installed];
- localStorage.setItem('busBuilderSave',JSON.stringify(saveData));
- updateUI();
+function money(n) {
+  return 'Rp ' + Number(n).toLocaleString('id-ID');
 }
-function money(n){return 'Rp '+n.toLocaleString('id-ID')}
-function notify(t){
- const el=document.getElementById('toast');
- el.textContent=t;
- el.classList.add('show');
- clearTimeout(toastTimer);
- toastTimer=setTimeout(()=>el.classList.remove('show'),2200);
+
+function notify(message) {
+  const el = document.getElementById('toast');
+  el.textContent = message;
+  el.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => el.classList.remove('show'),2300);
 }
-window.go=function(page){
- document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
- document.querySelectorAll('.nav button').forEach(b=>b.classList.toggle('active',b.dataset.page===page));
- document.getElementById(page).classList.add('active');
- setTimeout(()=>scenes.forEach(s=>s.resize()),100);
-};
-document.querySelectorAll('.nav button').forEach(b=>{
- b.onclick=()=>go(b.dataset.page);
+
+function persist() {
+  saveData.installed = [...installed];
+
+  try {
+    localStorage.setItem('busBuilderSave',JSON.stringify(saveData));
+  } catch(error) {
+    console.warn('Penyimpanan browser gagal:',error);
+  }
+
+  updateUI();
+
+  if(window.refreshBus3D) window.refreshBus3D();
+}
+
+function go(page) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav button').forEach(b => {
+    b.classList.toggle('active',b.dataset.page === page);
+  });
+
+  document.getElementById(page).classList.add('active');
+
+  setTimeout(() => {
+    if(window.resizeBus3D) window.resizeBus3D();
+  },150);
+}
+
+document.querySelectorAll('.nav button').forEach(button => {
+  button.addEventListener('click',() => go(button.dataset.page));
 });
 
-/* ================= 3D MODEL ================= */
+function buy(id) {
+  const part = catalog.find(p => p.id === id);
+  if(!part) return;
 
-function mat(color,rough=.5,metal=0){
- return new THREE.MeshStandardMaterial({color,roughness:rough,metalness:metal});
-}
-function box(parent,x,y,z,w,h,d,material,round=false){
- let geometry=new THREE.BoxGeometry(w,h,d);
- const mesh=new THREE.Mesh(geometry,material);
- mesh.position.set(x,y,z);
- mesh.castShadow=true;
- mesh.receiveShadow=true;
- parent.add(mesh);
- return mesh;
-}
-function roundShape(w,h,r){
- const s=new THREE.Shape();
- const x=-w/2,y=-h/2;
- s.moveTo(x+r,y);
- s.lineTo(x+w-r,y);
- s.quadraticCurveTo(x+w,y,x+w,y+r);
- s.lineTo(x+w,y+h-r);
- s.quadraticCurveTo(x+w,y+h,x+w-r,y+h);
- s.lineTo(x+r,y+h);
- s.quadraticCurveTo(x,y+h,x,y+h-r);
- s.lineTo(x,y+r);
- s.quadraticCurveTo(x,y,x+r,y);
- return s;
-}
-function roundedPanel(parent,x,y,z,w,h,depth,material){
- const geo=new THREE.ExtrudeGeometry(roundShape(w,h,Math.min(.12,w*.12,h*.2)),{
-  depth,bevelEnabled:true,bevelSegments:2,steps:1,
-  bevelSize:.025,bevelThickness:.025
- });
- geo.translate(0,0,-depth/2);
- const mesh=new THREE.Mesh(geo,material);
- mesh.position.set(x,y,z);
- mesh.castShadow=true;
- parent.add(mesh);
- return mesh;
-}
-function cylinder(parent,x,y,z,r,depth,material){
- const m=new THREE.Mesh(new THREE.CylinderGeometry(r,r,depth,32),material);
- m.rotation.x=Math.PI/2;
- m.position.set(x,y,z);
- m.castShadow=true;
- parent.add(m);
- return m;
-}
-function makeScene(canvas){
- const scene=new THREE.Scene();
- scene.background=new THREE.Color('#101c2d');
- const camera=new THREE.PerspectiveCamera(40,1,.1,100);
- camera.position.set(8,4.5,9);
- const renderer=new THREE.WebGLRenderer({canvas,antialias:true});
- renderer.setPixelRatio(Math.min(devicePixelRatio,2));
- renderer.shadowMap.enabled=true;
- renderer.shadowMap.type=THREE.PCFSoftShadowMap;
- renderer.outputColorSpace=THREE.SRGBColorSpace;
- const controls=new OrbitControls(camera,renderer.domElement);
- controls.enableDamping=true;
- controls.minDistance=5;
- controls.maxDistance=16;
- controls.target.set(0,1.4,0);
-
- scene.add(new THREE.HemisphereLight('#e6f3ff','#24334a',2.1));
- const sun=new THREE.DirectionalLight('#ffffff',3);
- sun.position.set(5,9,7);sun.castShadow=true;
- scene.add(sun);
-
- const floor=new THREE.Mesh(new THREE.PlaneGeometry(200,200),mat('#17263a'));
- floor.rotation.x=-Math.PI/2;floor.position.y=-.04;
- floor.receiveShadow=true;scene.add(floor);
- const grid=new THREE.GridHelper(40,40,'#3b5877','#263b53');
- grid.position.y=-.02;scene.add(grid);
-
- const bus=new THREE.Group();
- scene.add(bus);
-
- const bodyMat=new THREE.MeshPhysicalMaterial({
-  color:saveData.color,roughness:.32,metalness:.15,clearcoat:.4
- });
- const accentMat=mat(saveData.accent,.35,.1);
- const glassMat=new THREE.MeshPhysicalMaterial({
-  color:'#58bde5',roughness:.12,metalness:.1,
-  transparent:true,opacity:.8
- });
- const dark=mat('#1a2736');
- const rubber=mat('#11151c');
- const silver=mat('#bac9d9',.25,.7);
- const lightMat=mat('#fff1a6',.25);
- const redMat=mat('#ef4444');
-
- // Body with rounded side profile
- const shape=new THREE.Shape();
- shape.moveTo(-2.85,.68);
- shape.lineTo(-2.85,2.15);
- shape.quadraticCurveTo(-2.85,2.7,-2.25,2.78);
- shape.lineTo(1.95,2.78);
- shape.quadraticCurveTo(2.55,2.78,2.85,2.25);
- shape.lineTo(3,.95);
- shape.quadraticCurveTo(3,.65,2.65,.65);
- shape.lineTo(-2.85,.68);
- const bodyGeo=new THREE.ExtrudeGeometry(shape,{
-  depth:1.95,bevelEnabled:true,bevelSegments:4,
-  steps:1,bevelSize:.065,bevelThickness:.07
- });
- bodyGeo.translate(0,0,-.975);
- const body=new THREE.Mesh(bodyGeo,bodyMat);
- body.castShadow=true;bus.add(body);
-
- // Roof
- const roofGroup=new THREE.Group();bus.add(roofGroup);
- roundedPanel(roofGroup,0,2.77,0,4.65,.18,1.98,bodyMat);
-
- // Side windows
- const windowsGroup=new THREE.Group();bus.add(windowsGroup);
- for(const side of [-1,1]){
-  for(let i=0;i<5;i++){
-   roundedPanel(windowsGroup,-1.9+i*.87,2.02,side*1.0,.73,.58,.035,glassMat);
+  if(saveData.money < part.price) {
+    notify('❌ Uang kamu belum cukup!');
+    return;
   }
- }
- // Windshield and rear glass
- roundedPanel(windowsGroup,2.87,1.99,0,.06,.85,1.55,glassMat);
- roundedPanel(windowsGroup,-2.85,2.0,0,.06,.65,1.55,glassMat);
 
- // Wheel groups
- const wheelGroup=new THREE.Group();bus.add(wheelGroup);
- for(const x of [-1.85,1.85]){
-  for(const z of [-1.0,1.0]){
-   cylinder(wheelGroup,x,.62,z,.54,.22,rubber);
-   cylinder(wheelGroup,x,.62,z*1.11,.32,.24,silver);
-   cylinder(wheelGroup,x,.62,z*1.17,.11,.25,dark);
+  saveData.money -= part.price;
+  saveData.inventory[id] = (saveData.inventory[id] || 0) + 1;
+
+  persist();
+  notify('✅ Berhasil membeli ' + part.name);
+}
+
+function install(id) {
+  const part = catalog.find(p => p.id === id);
+  if(!part) return;
+
+  if(installed.has(id)) {
+    notify('Komponen sudah terpasang!');
+    return;
   }
- }
 
- // Part groups
- const parts={};
- function part(id){const g=new THREE.Group();bus.add(g);parts[id]=g;return g;}
-
- // Engine
- const engine=part('engine');
- box(engine,-2.2,.88,0,.9,.35,.8,dark);
- box(engine,-2.2,1.08,0,.65,.12,.6,silver);
- // Front headlights
- const headlight=part('headlight');
- for(const z of [-.67,.67]){
-  roundedPanel(headlight,2.94,1.15,z,.12,.25,.22,lightMat);
- }
- // Mirrors
- const mirror=part('mirror');
- for(const z of [-1,1]){
-  box(mirror,2.2,2.15,z*1.15,.28,.08,.08,dark);
-  box(mirror,2.27,2.19,z*1.27,.2,.22,.12,silver);
- }
- // Bumper
- const bumper=part('bumper');
- roundedPanel(bumper,3,.72,0,.18,.22,1.85,silver);
- // Grille
- const grille=part('grille');
- roundedPanel(grille,3.015,1.0,0,.04,.28,.72,dark);
- for(let i=0;i<5;i++){
-  box(grille,3.04,.89+i*.045,0,.03,.018,.65,silver);
- }
- // Door
- const door=part('door');
- roundedPanel(door,1.5,1.57,1.005,.65,1.45,.04,dark);
- roundedPanel(door,1.5,1.98,1.035,.51,.48,.025,glassMat);
- box(door,1.75,1.3,1.065,.035,.4,.025,silver);
- // Tail lights
- const tail=part('taillight');
- for(const z of [-.68,.68]){
-  roundedPanel(tail,-2.91,1.05,z,.1,.36,.12,redMat);
- }
- // Air conditioner
- const ac=part('ac');
- roundedPanel(ac,-.3,2.92,0,1.15,.18,.65,silver);
- for(let i=0;i<4;i++)box(ac,-.68+i*.25,3.015,0,.035,.02,.43,dark);
- // Interior group
- const interior=part('seat');
- for(let x of [-1.7,-.85,0,.85,1.7]){
-  for(let z of [-.43,.43]){
-   roundedPanel(interior,x,1.17,z,.42,.42,.34,accentMat);
-   roundedPanel(interior,x,1.45,z,.42,.42,.34,accentMat);
+  if((saveData.inventory[id] || 0) < 1) {
+    notify('❌ Kamu belum memiliki ' + part.name);
+    return;
   }
- }
- // Dashboard
- const dashboard=part('dashboard');
- roundedPanel(dashboard,2.15,1.28,0,.55,.25,1.35,dark);
- box(dashboard,2.3,1.45,0,.22,.12,.7,silver);
- // Steering
- const steering=part('steering');
- const ring=new THREE.Mesh(new THREE.TorusGeometry(.2,.035,10,32),dark);
- ring.position.set(2.25,1.58,-.52);
- ring.rotation.y=Math.PI/2;
- steering.add(ring);
- box(steering,2.25,1.58,-.52,.06,.06,.06,silver);
 
- const allParts={
-  engine,wheel:wheelGroup,glass:windowsGroup,headlight,mirror,
-  bumper,grille,door,taillight,ac,seat, dashboard,steering
- };
+  saveData.inventory[id]--;
+  installed.add(id);
 
- function refresh(){
-  Object.entries(allParts).forEach(([id,g])=>{
-   g.visible=installed.has(id);
+  persist();
+  notify('🔧 ' + part.name + ' berhasil dipasang!');
+}
+
+function removePart(id) {
+  if(!installed.has(id)) return;
+
+  installed.delete(id);
+  saveData.inventory[id] = (saveData.inventory[id] || 0) + 1;
+
+  persist();
+  notify('↩️ Komponen berhasil dilepas!');
+}
+
+function shopRender() {
+  const el = document.getElementById('shopItems');
+  el.innerHTML = '';
+
+  catalog.forEach(part => {
+    const qty = saveData.inventory[part.id] || 0;
+    const isInstalled = installed.has(part.id);
+
+    const card = document.createElement('div');
+    card.className = 'item';
+
+    card.innerHTML = `
+      <div class="emoji">${part.emoji}</div>
+      <h3>${part.name}</h3>
+      <p>${part.desc}</p>
+      <div class="price">${money(part.price)}</div>
+      <p>Stok: ${qty} • ${isInstalled ? 'Terpasang' : 'Belum terpasang'}</p>
+      <button class="btn" type="button">🛒 BELI SEKARANG</button>
+    `;
+
+    card.querySelector('button').addEventListener('click',() => buy(part.id));
+    el.appendChild(card);
   });
-  // Body and windows are shown as the basic bus shell
-  // Interior can be inspected by making the shell transparent.
-  bodyMat.transparent=saveData.interiorOpen;
-  bodyMat.opacity=saveData.interiorOpen?.22:1;
-  roofGroup.visible=!saveData.interiorOpen;
-  roofGroup.children.forEach(o=>o.material=bodyMat);
- }
- refresh();
-
- const resize=()=>{
-  const w=canvas.clientWidth||600,h=canvas.clientHeight||400;
-  renderer.setSize(w,h,false);
-  camera.aspect=w/h;camera.updateProjectionMatrix();
- };
- const view=(type)=>{
-  if(type==='front')camera.position.set(9,2.5,0);
-  if(type==='side')camera.position.set(0,3,10);
-  if(type==='rear')camera.position.set(-9,2.5,0);
-  if(type==='top')camera.position.set(0,12,.1);
-  camera.lookAt(0,1.4,0);
-  controls.target.set(0,1.4,0);
- };
- function animate(){
-  requestAnimationFrame(animate);
-  if(rotating)bus.rotation.y+=.004;
-  controls.update();
-  renderer.render(scene,camera);
- }
- resize();animate();
- return {scene,camera,renderer,controls,resize,view,refresh,bodyMat,accentMat};
 }
 
-function init(){
- ['scene','sceneInterior','scenePaint'].forEach(id=>{
-  const canvas=document.getElementById(id);
-  if(canvas)scenes.push(makeScene(canvas));
- });
- models=scenes;
-}
-init();
+function installRender() {
+  const el = document.getElementById('installItems');
+  el.innerHTML = '';
 
-function refreshModels(){
- models.forEach(m=>{
-  m.bodyMat.color.set(saveData.color);
-  m.accentMat.color.set(saveData.accent);
-  m.refresh();
- });
-}
+  catalog.forEach(part => {
+    const qty = saveData.inventory[part.id] || 0;
+    const isInstalled = installed.has(part.id);
 
-/* ================= SHOP ================= */
+    const row = document.createElement('div');
+    row.className = 'parts-row';
 
-function buy(id){
- const p=catalog.find(x=>x.id===id);
- if(saveData.money<p.price){
-  notify('❌ Uang tidak cukup untuk membeli '+p.name);
-  return;
- }
- saveData.money-=p.price;
- saveData.inventory[id]=(saveData.inventory[id]||0)+1;
- persist();
- notify('✅ Berhasil membeli '+p.name);
-}
-function shopRender(){
- const el=document.getElementById('shopItems');
- el.innerHTML='';
- catalog.forEach(p=>{
-  const qty=saveData.inventory[p.id]||0;
-  const isInstalled=installed.has(p.id);
-  const card=document.createElement('div');
-  card.className='item';
-  card.innerHTML=`
-   <div class="emoji">${p.emoji}</div>
-   <h3>${p.name}</h3>
-   <p>${p.desc}</p>
-   <div class="price">${money(p.price)}</div>
-   <p>Stok: ${qty} • ${isInstalled?'Terpasang':'Belum terpasang'}</p>
-   <button class="btn" data-buy="${p.id}">🛒 BELI SEKARANG</button>`;
-  el.appendChild(card);
- });
- el.querySelectorAll('[data-buy]').forEach(b=>{
-  b.onclick=()=>buy(b.dataset.buy);
- });
+    row.innerHTML = `
+      <div>
+        <b>${part.emoji} ${part.name}</b>
+        <small>Inventaris: ${qty} • ${part.group === 'interior' ? 'Interior' : 'Eksterior'}</small>
+      </div>
+      <button class="btn ${isInstalled ? 'red' : 'green'}" type="button">
+        ${isInstalled ? 'LEPAS' : 'PASANG'}
+      </button>
+    `;
+
+    row.querySelector('button').addEventListener('click',() => {
+      if(isInstalled) removePart(part.id);
+      else install(part.id);
+    });
+
+    el.appendChild(row);
+  });
 }
 
-/* ================= INSTALL / REMOVE ================= */
-
-function install(id){
- const p=catalog.find(x=>x.id===id);
- if(installed.has(id)){notify('Komponen sudah terpasang!');return}
- if((saveData.inventory[id]||0)<1){
-  notify('❌ Kamu belum memiliki '+p.name);
-  return;
- }
- saveData.inventory[id]--;
- installed.add(id);
- persist();
- notify('🔧 '+p.name+' berhasil dipasang!');
-}
-function removePart(id){
- if(!installed.has(id))return;
- installed.delete(id);
- saveData.inventory[id]=(saveData.inventory[id]||0)+1;
- persist();
- notify('↩️ Komponen berhasil dilepas dan masuk inventaris!');
-}
-function installRender(){
- const el=document.getElementById('installItems');
- el.innerHTML='';
- catalog.forEach(p=>{
-  const qty=saveData.inventory[p.id]||0;
-  const isOn=installed.has(p.id);
-  const row=document.createElement('div');
-  row.className='parts-row';
-  row.innerHTML=`
-   <div>
-    <b>${p.emoji} ${p.name}</b>
-    <small>Inventaris: ${qty} • ${p.group==='interior'?'Interior':'Eksterior'}</small>
-   </div>
-   <button class="btn ${isOn?'red':'green'}">
-    ${isOn?'LEPAS':'PASANG'}
-   </button>`;
-  row.querySelector('button').onclick=()=>isOn?removePart(p.id):install(p.id);
-  el.appendChild(row);
- });
-}
-
-/* ================= INTERIOR ================= */
-
-function interiorRender(){
- const el=document.getElementById('interiorList');
- el.innerHTML='';
- catalog.filter(p=>p.group==='interior').forEach(p=>{
-  const on=installed.has(p.id);
-  const row=document.createElement('div');
-  row.className='parts-row';
-  row.innerHTML=`
-   <div><b>${p.emoji} ${p.name}</b><small>${on?'Sudah terpasang':'Belum dipasang'}</small></div>
-   <span>${on?'✅':'❌'}</span>`;
-  el.appendChild(row);
- });
-}
-window.toggleInterior=function(){
- saveData.interiorOpen=!saveData.interiorOpen;
- persist();
- notify(saveData.interiorOpen?'Atap dibuat transparan untuk inspeksi':'Tampilan bodi dikembalikan');
-};
-
-/* ================= PAINT ================= */
-
-const paintColors=[
- ['Kuning','#facc15'],['Merah','#ef4444'],
- ['Biru','#2563eb'],['Putih','#f8fafc'],
- ['Hitam','#303846'],['Hijau','#16a34a'],
- ['Oranye','#f97316'],['Ungu','#9333ea']
+/* TANTANGAN */
+const challenges = [
+  {
+    id:'beginner',
+    name:'Tantangan Pemula',
+    difficulty:'MUDAH',
+    description:'Pasang satu set roda dan lampu depan.',
+    required:['wheel','headlight'],
+    reward:500000
+  },
+  {
+    id:'engine',
+    name:'Tantangan Mesin',
+    difficulty:'SEDANG',
+    description:'Pasang mesin, grille, dan bumper depan.',
+    required:['engine','grille','bumper'],
+    reward:1000000
+  },
+  {
+    id:'interior',
+    name:'Tantangan Interior',
+    difficulty:'SEDANG',
+    description:'Pasang kursi penumpang, dashboard, dan setir.',
+    required:['seat','dashboard','steering'],
+    reward:1500000
+  },
+  {
+    id:'complete',
+    name:'Tantangan Bus Lengkap',
+    difficulty:'SULIT',
+    description:'Pasang seluruh 13 komponen bus.',
+    required:catalog.map(p => p.id),
+    reward:5000000
+  }
 ];
-const accentColors=[
- ['Merah','#dc2626'],['Biru','#38bdf8'],
- ['Putih','#ffffff'],['Hitam','#111827'],
- ['Emas','#fbbf24']
+
+function challengeRender() {
+  const el = document.getElementById('challengeItems');
+  el.innerHTML = '';
+
+  challenges.forEach(challenge => {
+    const completed = challenge.required.every(id => installed.has(id));
+    const claimed = saveData.claimed.includes(challenge.id);
+    const count = challenge.required.filter(id => installed.has(id)).length;
+    const percent = Math.round(count / challenge.required.length * 100);
+
+    const card = document.createElement('div');
+    card.className = 'challenge' + (completed ? ' done' : '');
+
+    card.innerHTML = `
+      <h3>🏆 ${challenge.name}</h3>
+      <p class="muted">${challenge.difficulty} • ${challenge.description}</p>
+      <div class="progress"><span style="width:${percent}%"></span></div>
+      <p class="muted">Progres: ${count}/${challenge.required.length} komponen</p>
+      <div class="reward">Hadiah: ${money(challenge.reward)}</div>
+      <button class="btn ${claimed ? 'gray' : 'gold'} full" type="button">
+        ${claimed ? '✅ HADIAH SUDAH DIAMBIL' : completed ? '🎁 AMBIL HADIAH' : '🔒 SELESAIKAN TANTANGAN'}
+      </button>
+    `;
+
+    const button = card.querySelector('button');
+    button.disabled = !completed || claimed;
+
+    button.addEventListener('click',() => {
+      if(!completed || claimed) return;
+
+      saveData.money += challenge.reward;
+      saveData.claimed.push(challenge.id);
+
+      persist();
+      notify('🎉 Kamu mendapatkan ' + money(challenge.reward));
+    });
+
+    el.appendChild(card);
+  });
+}
+
+function interiorRender() {
+  const el = document.getElementById('interiorList');
+  el.innerHTML = '';
+
+  catalog.filter(p => p.group === 'interior').forEach(part => {
+    const on = installed.has(part.id);
+    const row = document.createElement('div');
+
+    row.className = 'parts-row';
+    row.innerHTML = `
+      <div>
+        <b>${part.emoji} ${part.name}</b>
+        <small>${on ? 'Sudah terpasang' : 'Belum dipasang'}</small>
+      </div>
+      <span>${on ? '✅' : '❌'}</span>
+    `;
+
+    el.appendChild(row);
+  });
+}
+
+function toggleInterior() {
+  saveData.interiorOpen = !saveData.interiorOpen;
+  persist();
+
+  notify(saveData.interiorOpen ? 'Mode inspeksi interior aktif' : 'Mode inspeksi dimatikan');
+}
+
+const paintColors = [
+  ['Kuning','#facc15'],
+  ['Merah','#ef4444'],
+  ['Biru','#2563eb'],
+  ['Putih','#f8fafc'],
+  ['Hitam','#303846'],
+  ['Hijau','#16a34a'],
+  ['Oranye','#f97316'],
+  ['Ungu','#9333ea']
 ];
-function drawColors(element,arr,current,callback){
- const el=document.getElementById(element);
- el.innerHTML='';
- arr.forEach(([name,color])=>{
-  const b=document.createElement('button');
-  b.className='swatch'+(current===color?' selected':'');
-  b.style.background=color;b.title=name;
-  b.onclick=()=>callback(name,color);
-  el.appendChild(b);
- });
+
+const accentColors = [
+  ['Merah','#dc2626'],
+  ['Biru','#38bdf8'],
+  ['Putih','#ffffff'],
+  ['Hitam','#111827'],
+  ['Emas','#fbbf24']
+];
+
+function drawColors(element,arr,current,callback) {
+  const el = document.getElementById(element);
+  el.innerHTML = '';
+
+  arr.forEach(([name,color]) => {
+    const button = document.createElement('button');
+
+    button.className = 'swatch' + (current === color ? ' selected' : '');
+    button.style.background = color;
+    button.title = name;
+    button.setAttribute('aria-label',name);
+
+    button.addEventListener('click',() => callback(name,color));
+    el.appendChild(button);
+  });
 }
-function paintRender(){
- drawColors('colors',paintColors,saveData.color,(name,color)=>{
-  saveData.color=color;persist();paintRender();
-  notify('Warna bus diubah menjadi '+name);
- });
- drawColors('accents',accentColors,saveData.accent,(name,color)=>{
-  saveData.accent=color;persist();paintRender();
-  notify('Warna aksen diubah menjadi '+name);
- });
+
+function paintRender() {
+  drawColors('colors',paintColors,saveData.color,(name,color) => {
+    saveData.color = color;
+    persist();
+    paintRender();
+    notify('Warna bus diubah menjadi ' + name);
+  });
+
+  drawColors('accents',accentColors,saveData.accent,(name,color) => {
+    saveData.accent = color;
+    persist();
+    paintRender();
+    notify('Warna aksen diubah menjadi ' + name);
+  });
 }
-window.saveName=function(){
- const val=document.getElementById('nameInput').value.trim();
- if(!val){notify('Masukkan nama bus terlebih dahulu');return}
- saveData.name=val.toUpperCase();
- persist();notify('Nama bus berhasil disimpan!');
-};
 
-/* ================= CAMERA ================= */
+function saveName() {
+  const value = document.getElementById('nameInput').value.trim();
 
-window.cameraView=function(type){
- scenes.forEach(s=>s.view(type));
-};
-window.toggleRotate=function(){
- rotating=!rotating;
- notify(rotating?'Putaran otomatis aktif':'Putaran otomatis berhenti');
-};
+  if(!value) {
+    notify('Masukkan nama bus terlebih dahulu');
+    return;
+  }
 
-/* ================= UI ================= */
-
-function updateUI(){
- document.getElementById('money').textContent=money(saveData.money);
- document.getElementById('stock').textContent=
-  Object.values(saveData.inventory).reduce((a,b)=>a+b,0);
- const count=installed.size;
- const percent=Math.round(count/catalog.length*100);
- document.getElementById('percent').textContent=percent+'%';
- document.getElementById('progress').style.width=percent+'%';
- document.getElementById('installedCount').textContent=count+' / '+catalog.length;
- document.getElementById('status').textContent=
-  percent===100?'🏆 SELAMAT! SELURUH KOMPONEN SUDAH TERPASANG!':
-  'Masih ada '+(catalog.length-count)+' komponen yang belum dipasang.';
- document.getElementById('busName').textContent=saveData.name;
- for(const [id,label] of [['engine','engine'],['wheel','wheel'],['seat','seat']]){
-  const on=installed.has(id);
-  document.getElementById(label+'Status').textContent=on?'Sudah terpasang':'Belum terpasang';
-  document.getElementById(label+'Icon').textContent=on?'✅':'❌';
- }
- shopRender();
- installRender();
- interiorRender();
- refreshModels();
+  saveData.name = value.toUpperCase();
+  persist();
+  notify('Nama bus berhasil disimpan!');
 }
+
+function updateUI() {
+  document.getElementById('money').textContent = money(saveData.money);
+
+  document.getElementById('stock').textContent =
+    Object.values(saveData.inventory).reduce((a,b) => a + b,0);
+
+  const count = installed.size;
+  const percent = Math.round(count / catalog.length * 100);
+
+  document.getElementById('percent').textContent = percent + '%';
+  document.getElementById('progress').style.width = percent + '%';
+  document.getElementById('installedCount').textContent = count + ' / ' + catalog.length;
+
+  document.getElementById('status').textContent =
+    percent === 100
+      ? '🏆 SELAMAT! SELURUH KOMPONEN SUDAH TERPASANG!'
+      : 'Masih ada ' + (catalog.length - count) + ' komponen yang belum dipasang.';
+
+  document.getElementById('busName').textContent = saveData.name;
+
+  ['engine','wheel','seat'].forEach(id => {
+    const on = installed.has(id);
+    document.getElementById(id + 'Status').textContent =
+      on ? 'Sudah terpasang' : 'Belum terpasang';
+    document.getElementById(id + 'Icon').textContent = on ? '✅' : '❌';
+  });
+
+  shopRender();
+  installRender();
+  challengeRender();
+  interiorRender();
+}
+
 paintRender();
 updateUI();
 </script>
+
+<!-- 3D MODEL: JIKA CDN GAGAL, FITUR TOKO TETAP BERJALAN -->
+<script type="module">
+try {
+  const THREE = await import('three');
+  const {OrbitControls} = await import('three/addons/controls/OrbitControls.js');
+
+  const canvas = document.getElementById('scene');
+  const scene = new THREE.Scene();
+  scene.background = new THREE.Color('#101c2d');
+
+  const camera = new THREE.PerspectiveCamera(40,1,.1,100);
+  camera.position.set(8,4.5,9);
+
+  const renderer = new THREE.WebGLRenderer({
+    canvas,
+    antialias:true
+  });
+
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio,2));
+  renderer.shadowMap.enabled = true;
+  renderer.outputColorSpace = THREE.SRGBColorSpace;
+
+  const controls = new OrbitControls(camera,renderer.domElement);
+  controls.enableDamping = true;
+  controls.minDistance = 5;
+  controls.maxDistance = 16;
+  controls.target.set(0,1.4,0);
+
+  scene.add(new THREE.HemisphereLight('#e6f3ff','#24334a',2));
+
+  const sun = new THREE.DirectionalLight('#ffffff',3);
+  sun.position.set(5,9,7);
+  sun.castShadow = true;
+  scene.add(sun);
+
+  const floor = new THREE.Mesh(
+    new THREE.PlaneGeometry(200,200),
+    new THREE.MeshStandardMaterial({color:'#17263a'})
+  );
+  floor.rotation.x = -Math.PI/2;
+  floor.position.y = -.04;
+  floor.receiveShadow = true;
+  scene.add(floor);
+
+  const grid = new THREE.GridHelper(40,40,'#3b5877','#263b53');
+  grid.position.y = -.02;
+  scene.add(grid);
+
+  const bus = new THREE.Group();
+  scene.add(bus);
+
+  const bodyMat = new THREE.MeshPhysicalMaterial({
+    color:'#facc15',
+    roughness:.32,
+    metalness:.15,
+    clearcoat:.4
+  });
+
+  const accentMat = new THREE.MeshStandardMaterial({color:'#dc2626'});
+  const glassMat = new THREE.MeshPhysicalMaterial({
+    color:'#58bde5',
+    roughness:.12,
+    metalness:.1,
+    transparent:true,
+    opacity:.8
+  });
+
+  const dark = new THREE.MeshStandardMaterial({color:'#1a2736'});
+  const rubber = new THREE.MeshStandardMaterial({color:'#11151c'});
+  const silver = new THREE.MeshStandardMaterial({color:'#bac9d9',metalness:.7});
+  const lightMat = new THREE.MeshStandardMaterial({color:'#fff1a6'});
+  const redMat = new THREE.MeshStandardMaterial({color:'#ef4444'});
+
+  function box(parent,x,y,z,w,h,d,material) {
+    const mesh = new THREE.Mesh(
+      new THREE.BoxGeometry(w,h,d),
+      material
+    );
+
+    mesh.position.set(x,y,z);
+    mesh.castShadow = true;
+    mesh.receiveShadow = true;
+    parent.add(mesh);
+    return mesh;
+  }
+
+  function roundedShape(w,h,r) {
+    const s = new THREE.Shape();
+    const x = -w/2;
+    const y = -h/2;
+
+    s.moveTo(x+r,y);
+    s.lineTo(x+w-r,y);
+    s.quadraticCurveTo(x+w,y,x+w,y+r);
+    s.lineTo(x+w,y+h-r);
+    s.quadraticCurveTo(x+w,y+h,x+w-r,y+h);
+    s.lineTo(x+r,y+h);
+    s.quadraticCurveTo(x,y+h,x,y+h-r);
+    s.lineTo(x,y+r);
+    s.quadraticCurveTo(x,y,x+r,y);
+
+    return s;
+  }
+
+  function roundedPanel(parent,x,y,z,w,h,depth,material) {
+    const geometry = new THREE.ExtrudeGeometry(
+      roundedShape(w,h,Math.min(.12,w*.12,h*.2)),
+      {
+        depth,
+        bevelEnabled:true,
+        bevelSegments:3,
+        steps:1,
+        bevelSize:.025,
+        bevelThickness:.025
+      }
+    );
+
+    geometry.translate(0,0,-depth/2);
+
+    const mesh = new THREE.Mesh(geometry,material);
+    mesh.position.set(x,y,z);
+    mesh.castShadow = true;
+    parent.add(mesh);
+
+    return mesh;
+  }
+
+  function part(id) {
+    const group = new THREE.Group();
+    bus.add(group);
+    parts[id] = group;
+    return group;
+  }
+
+  const parts = {};
+
+  /* BODI BUS */
+  const shape = new THREE.Shape();
+
+  shape.moveTo(-2.85,.68);
+  shape.lineTo(-2.85,2.15);
+  shape.quadraticCurveTo(-2.85,2.7,-2.25,2.78);
+  shape.lineTo(1.95,2.78);
+  shape.quadraticCurveTo(2.55,2.78,2.85,2.25);
+  shape.lineTo(3,.95);
+  shape.quadraticCurveTo(3,.65,2.65,.65);
+  shape.lineTo(-2.85,.68);
+
+  const bodyGeo = new THREE.ExtrudeGeometry(shape,{
+    depth:1.95,
+    bevelEnabled:true,
+    bevelSegments:4,
+    steps:1,
+    bevelSize:.065,
+    bevelThickness:.07
+  });
+
+  bodyGeo.translate(0,0,-.975);
+
+  const body = new THREE.Mesh(bodyGeo,bodyMat);
+  body.castShadow = true;
+  bus.add(body);
+
+  /* ATAP */
+  const roofGroup = new THREE.Group();
+  bus.add(roofGroup);
+  roundedPanel(roofGroup,0,2.77,0,4.65,.18,1.98,bodyMat);
+
+  /* KACA */
+  const glass = part('glass');
+
+  for(const side of [-1,1]) {
+    for(let i=0;i<5;i++) {
+      roundedPanel(
+        glass,-1.9+i*.87,2.02,side*1.0,
+        .73,.58,.035,glassMat
+      );
+    }
+  }
+
+  roundedPanel(glass,2.87,1.99,0,.06,.85,1.55,glassMat);
+  roundedPanel(glass,-2.85,2.0,0,.06,.65,1.55,glassMat);
+
+  /* RODA */
+  const wheel = part('wheel');
+
+  for(const x of [-1.85,1.85]) {
+    for(const z of [-1.0,1.0]) {
+      const tire = new THREE.Mesh(
+        new THREE.CylinderGeometry(.54,.54,.22,32),
+        rubber
+      );
+      tire.rotation.x = Math.PI/2;
+      tire.position.set(x,.62,z);
+      wheel.add(tire);
+
+      const rim = new THREE.Mesh(
+        new THREE.CylinderGeometry(.32,.32,.24,32),
+        silver
+      );
+      rim.rotation.x = Math.PI/2;
+      rim.position.set(x,.62,z*1.11);
+      wheel.add(rim);
+    }
+  }
+
+  /* MESIN */
+  const engine = part('engine');
+  box(engine,-2.2,.88,0,.9,.35,.8,dark);
+  box(engine,-2.2,1.08,0,.65,.12,.6,silver);
+
+  /* LAMPU DEPAN */
+  const headlight = part('headlight');
+
+  for(const z of [-.67,.67]) {
+    roundedPanel(headlight,2.94,1.15,z,.12,.25,.22,lightMat);
+  }
+
+  /* SPION */
+  const mirror = part('mirror');
+
+  for(const z of [-1,1]) {
+    box(mirror,2.2,2.15,z*1.15,.28,.08,.08,dark);
+    box(mirror,2.27,2.19,z*1.27,.2,.22,.12,silver);
+  }
+
+  /* BUMPER */
+  const bumper = part('bumper');
+  roundedPanel(bumper,3,.72,0,.18,.22,1.85,silver);
+
+  /* GRILLE */
+  const grille = part('grille');
+  roundedPanel(grille,3.015,1.0,0,.04,.28,.72,dark);
+
+  for(let i=0;i<5;i++) {
+    box(grille,3.04,.89+i*.045,0,.03,.018,.65,silver);
+  }
+
+  /* PINTU */
+  const door = part('door');
+  roundedPanel(door,1.5,1.57,1.005,.65,1.45,.04,dark);
+  roundedPanel(door,1.5,1.98,1.035,.51,.48,.025,glassMat);
+  box(door,1.75,1.3,1.065,.035,.4,.025,silver);
+
+  /* LAMPU BELAKANG */
+  const taillight = part('taillight');
+
+  for(const z of [-.68,.68]) {
+    roundedPanel(taillight,-2.91,1.05,z,.1,.36,.12,redMat);
+  }
+
+  /* AC */
+  const ac = part('ac');
+  roundedPanel(ac,-.3,2.92,0,1.15,.18,.65,silver);
+
+  for(let i=0;i<4;i++) {
+    box(ac,-.68+i*.25,3.015,0,.035,.02,.43,dark);
+  }
+
+  /* KURSI */
+  const seat = part('seat');
+
+  for(const x of [-1.7,-.85,0,.85,1.7]) {
+    for(const z of [-.43,.43]) {
+      roundedPanel(seat,x,1.17,z,.42,.42,.34,accentMat);
+      roundedPanel(seat,x,1.45,z,.42,.42,.34,accentMat);
+    }
+  }
+
+  /* DASHBOARD */
+  const dashboard = part('dashboard');
+  roundedPanel(dashboard,2.15,1.28,0,.55,.25,1.35,dark);
+  box(dashboard,2.3,1.45,0,.22,.12,.7,silver);
+
+  /* SETIR */
+  const steering = part('steering');
+
+  const ring = new THREE.Mesh(
+    new THREE.TorusGeometry(.2,.035,10,32),
+    dark
+  );
+
+  ring.position.set(2.25,1.58,-.52);
+  ring.rotation.y = Math.PI/2;
+  steering.add(ring);
+
+  function refresh() {
+    Object.entries(parts).forEach(([id,group]) => {
+      group.visible = installed.has(id);
+    });
+
+    bodyMat.transparent = saveData.interiorOpen;
+    bodyMat.opacity = saveData.interiorOpen ? .22 : 1;
+    roofGroup.visible = !saveData.interiorOpen;
+  }
+
+  function resize() {
+    const width = canvas.clientWidth || 600;
+    const height = canvas.clientHeight || 400;
+
+    renderer.setSize(width,height,false);
+    camera.aspect = width/height;
+    camera.updateProjectionMatrix();
+  }
+
+  function view(type) {
+    if(type === 'front') camera.position.set(9,2.5,0);
+    if(type === 'side') camera.position.set(0,3,10);
+    if(type === 'rear') camera.position.set(-9,2.5,0);
+    if(type === 'top') camera.position.set(0,12,.1);
+
+    camera.lookAt(0,1.4,0);
+    controls.target.set(0,1.4,0);
+    controls.update();
+  }
+
+  let rotating = false;
+
+  window.toggleRotate = function() {
+    rotating = !rotating;
+    notify(rotating ? 'Putaran otomatis aktif' : 'Putaran otomatis berhenti');
+  };
+
+  window.cameraView = view;
+
+  window.refreshBus3D = function() {
+    bodyMat.color.set(saveData.color);
+    accentMat.color.set(saveData.accent);
+    refresh();
+  };
+
+  window.resizeBus3D = resize;
+
+  function animate() {
+    requestAnimationFrame(animate);
+
+    if(rotating) bus.rotation.y += .004;
+
+    controls.update();
+    renderer.render(scene,camera);
+  }
+
+  window.refreshBus3D();
+  resize();
+  animate();
+
+  window.addEventListener('resize',resize);
+
+} catch(error) {
+  console.error('3D gagal dimuat:',error);
+
+  const label = document.querySelector('.viewer-label');
+  if(label) {
+    label.textContent = '3D TIDAK TERSEDIA - TOKO DAN FITUR GAME TETAP AKTIF';
+  }
+
+  const canvas = document.getElementById('scene');
+  const context = canvas.getContext('2d');
+
+  if(context) {
+    context.fillStyle = '#101c2d';
+    context.fillRect(0,0,canvas.width,canvas.height);
+    context.fillStyle = '#38bdf8';
+    context.font = '22px Arial';
+    context.textAlign = 'center';
+    context.fillText('BUS BUILDER 3D',canvas.width/2,canvas.height/2);
+    context.font = '14px Arial';
+    context.fillText('Periksa koneksi internet untuk memuat 3D',canvas.width/2,canvas.height/2+35);
+  }
+
+  window.cameraView = function() {};
+  window.toggleRotate = function() {};
+}
+</script>
+
 </body>
 </html>
