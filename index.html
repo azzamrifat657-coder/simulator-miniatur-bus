@@ -1,0 +1,522 @@
+
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Simulator Miniatur Bus</title>
+
+<style>
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #101827;
+    color: white;
+}
+
+header {
+    text-align: center;
+    padding: 25px 15px;
+    background: #17243a;
+}
+
+header h1 {
+    margin: 0;
+    color: #38bdf8;
+}
+
+header p {
+    color: #bdc8d8;
+}
+
+.container {
+    max-width: 950px;
+    margin: auto;
+    padding: 20px;
+}
+
+.panel {
+    background: #1e293b;
+    border-radius: 15px;
+    padding: 20px;
+    margin-bottom: 18px;
+}
+
+.progress-info {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+}
+
+.progress-bar {
+    height: 15px;
+    background: #334155;
+    border-radius: 20px;
+    overflow: hidden;
+}
+
+.progress {
+    height: 100%;
+    width: 0%;
+    background: #22c55e;
+    transition: width 0.4s;
+}
+
+.bus-area {
+    background: #e2e8f0;
+    border-radius: 12px;
+    padding: 25px 10px;
+    overflow: hidden;
+}
+
+svg {
+    width: 100%;
+    max-width: 650px;
+    display: block;
+    margin: auto;
+}
+
+.part {
+    opacity: 0;
+    transition: opacity 0.4s;
+}
+
+.part.show {
+    opacity: 1;
+}
+
+.stage-title {
+    color: #38bdf8;
+    margin-top: 0;
+}
+
+.stage-desc {
+    color: #cbd5e1;
+    line-height: 1.6;
+    min-height: 45px;
+}
+
+.buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+button {
+    border: none;
+    border-radius: 9px;
+    padding: 13px 18px;
+    color: white;
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
+    flex: 1;
+    min-width: 100px;
+    transition: 0.2s;
+}
+
+button:active {
+    transform: scale(0.96);
+}
+
+button:disabled {
+    opacity: 0.35;
+    cursor: not-allowed;
+}
+
+.next {
+    background: #16a34a;
+}
+
+.back {
+    background: #475569;
+}
+
+.reset {
+    background: #dc2626;
+}
+
+.start {
+    background: #0284c7;
+}
+
+.stage-list {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 9px;
+}
+
+.stage-item {
+    background: #334155;
+    border: 1px solid #475569;
+    border-radius: 8px;
+    padding: 12px;
+    color: white;
+    text-align: left;
+    cursor: pointer;
+}
+
+.stage-item.active {
+    border-color: #38bdf8;
+    background: #075985;
+}
+
+.stage-item.done {
+    border-color: #22c55e;
+}
+
+footer {
+    text-align: center;
+    color: #94a3b8;
+    padding: 20px;
+}
+
+@media(max-width:500px) {
+    .stage-list {
+        grid-template-columns: 1fr;
+    }
+
+    button {
+        min-width: 40%;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<header>
+    <h1>🚌 Simulator Miniatur Bus</h1>
+    <p>Belajar membuat miniatur bus dari nol sampai selesai</p>
+</header>
+
+<div class="container">
+
+    <div class="panel">
+        <div class="progress-info">
+            <b>Progres Pembuatan</b>
+            <b id="percent">0%</b>
+        </div>
+
+        <div class="progress-bar">
+            <div class="progress" id="progress"></div>
+        </div>
+    </div>
+
+    <div class="panel">
+        <h3 style="color:#38bdf8">Visual Miniatur Bus</h3>
+
+        <div class="bus-area">
+            <svg viewBox="0 0 650 260">
+
+                <!-- Chassis -->
+                <g id="chassis" class="part">
+                    <rect x="75" y="175" width="500"
+                    height="17" rx="5" fill="#334155"/>
+                </g>
+
+                <!-- Body -->
+                <g id="body" class="part">
+                    <path d="M100 75 H490 Q535 75 560 120
+                    L575 175 H75 V105 Q75 75 100 75Z"
+                    fill="#facc15" stroke="#334155"
+                    stroke-width="5"/>
+                </g>
+
+                <!-- Windows -->
+                <g id="windows" class="part">
+                    <rect x="115" y="88" width="90"
+                    height="48" rx="5" fill="#38bdf8"
+                    stroke="#334155" stroke-width="3"/>
+
+                    <rect x="215" y="88" width="90"
+                    height="48" rx="5" fill="#38bdf8"
+                    stroke="#334155" stroke-width="3"/>
+
+                    <rect x="315" y="88" width="90"
+                    height="48" rx="5" fill="#38bdf8"
+                    stroke="#334155" stroke-width="3"/>
+
+                    <rect x="415" y="88" width="70"
+                    height="48" rx="5" fill="#38bdf8"
+                    stroke="#334155" stroke-width="3"/>
+                </g>
+
+                <!-- Windshield -->
+                <g id="windshield" class="part">
+                    <path d="M495 88 Q525 90 550 125
+                    L555 145 H495Z"
+                    fill="#38bdf8" stroke="#334155"
+                    stroke-width="3"/>
+                </g>
+
+                <!-- Wheels -->
+                <g id="wheels" class="part">
+                    <circle cx="175" cy="180" r="34"
+                    fill="#111827"/>
+                    <circle cx="175" cy="180" r="16"
+                    fill="#cbd5e1"/>
+
+                    <circle cx="475" cy="180" r="34"
+                    fill="#111827"/>
+                    <circle cx="475" cy="180" r="16"
+                    fill="#cbd5e1"/>
+                </g>
+
+                <!-- Paint -->
+                <g id="paint" class="part">
+                    <path d="M90 150 H565 L575 165
+                    H75Z" fill="#ef4444"/>
+                </g>
+
+                <!-- Lights -->
+                <g id="lights" class="part">
+                    <rect x="548" y="145" width="17"
+                    height="12" rx="3" fill="#fef08a"/>
+                    <rect x="77" y="145" width="12"
+                    height="12" rx="3" fill="#ef4444"/>
+                </g>
+
+                <!-- Details -->
+                <g id="details" class="part">
+                    <rect x="115" y="155" width="80"
+                    height="4" fill="#334155"/>
+                    <rect x="215" y="155" width="80"
+                    height="4" fill="#334155"/>
+                    <rect x="315" y="155" width="80"
+                    height="4" fill="#334155"/>
+                    <text x="320" y="148"
+                    text-anchor="middle"
+                    font-size="12" font-weight="bold"
+                    fill="#111827">MINI BUS</text>
+                </g>
+
+            </svg>
+        </div>
+    </div>
+
+    <div class="panel">
+        <h2 class="stage-title" id="title">
+            Persiapan Pembuatan
+        </h2>
+
+        <p class="stage-desc" id="description">
+            Selamat datang! Tekan tombol mulai untuk
+            memulai proses pembuatan miniatur bus.
+        </p>
+
+        <div class="buttons">
+            <button class="start" id="startBtn"
+            onclick="startBuild()">▶ Mulai</button>
+
+            <button class="back" id="backBtn"
+            onclick="previousStage()" disabled>
+            ◀ Kembali</button>
+
+            <button class="next" id="nextBtn"
+            onclick="nextStage()" disabled>
+            Lanjut ▶</button>
+
+            <button class="reset"
+            onclick="resetBuild()">↻ Reset</button>
+        </div>
+    </div>
+
+    <div class="panel">
+        <h3>📋 Tahapan Pembuatan</h3>
+        <div class="stage-list" id="stageList"></div>
+    </div>
+
+</div>
+
+<footer>
+    Simulator Edukasi Pembuatan Miniatur Bus © 2026
+</footer>
+
+<script>
+
+const stages = [
+{
+    title: "1. Persiapan Alat dan Bahan",
+    desc: "Siapkan kardus, penggaris, pensil, lem, gunting, cat, dan bahan untuk membuat miniatur bus."
+},
+{
+    title: "2. Membuat Rangka Dasar",
+    desc: "Buat pola dasar bus menggunakan kardus. Ukur panjang dan lebar sesuai ukuran miniatur.",
+    parts: ["chassis"]
+},
+{
+    title: "3. Membuat Badan Bus",
+    desc: "Potong dan susun kardus untuk membentuk bagian depan, belakang, samping, dan atap bus.",
+    parts: ["body"]
+},
+{
+    title: "4. Membuat Kaca Bus",
+    desc: "Buat lubang atau pola jendela pada badan bus. Tambahkan bahan transparan sebagai kaca.",
+    parts: ["windows", "windshield"]
+},
+{
+    title: "5. Memasang Roda",
+    desc: "Buat empat roda miniatur dari bahan yang sesuai, kemudian pasang pada bagian bawah bus.",
+    parts: ["wheels"]
+},
+{
+    title: "6. Memberikan Warna",
+    desc: "Warnai badan bus menggunakan cat sesuai desain yang diinginkan.",
+    parts: ["paint"]
+},
+{
+    title: "7. Memasang Lampu",
+    desc: "Tambahkan bagian lampu depan dan belakang agar miniatur bus terlihat lebih nyata.",
+    parts: ["lights"]
+},
+{
+    title: "8. Menambahkan Detail",
+    desc: "Tambahkan pintu, garis bodi, tulisan, spion, dan hiasan lainnya.",
+    parts: ["details"]
+},
+{
+    title: "9. Pemeriksaan",
+    desc: "Periksa kembali roda, lem, bentuk badan, warna, dan seluruh bagian miniatur bus."
+},
+{
+    title: "10. Miniatur Bus Selesai!",
+    desc: "Selamat! Miniatur bus berhasil dibuat dari awal hingga selesai. Progres mencapai 100%."
+}
+];
+
+let current = -1;
+
+const partIds = [
+    "chassis",
+    "body",
+    "windows",
+    "windshield",
+    "wheels",
+    "paint",
+    "lights",
+    "details"
+];
+
+function render() {
+
+    const percent = Math.max(0, current * 10);
+
+    document.getElementById("percent").textContent =
+        percent + "%";
+
+    document.getElementById("progress").style.width =
+        percent + "%";
+
+    if (current === -1) {
+        document.getElementById("title").textContent =
+            "Persiapan Pembuatan";
+
+        document.getElementById("description").textContent =
+            "Selamat datang! Tekan tombol mulai untuk memulai proses pembuatan miniatur bus.";
+    } else {
+        document.getElementById("title").textContent =
+            stages[current].title;
+
+        document.getElementById("description").textContent =
+            stages[current].desc;
+    }
+
+    // Tampilkan bagian bus sesuai tahapan
+    partIds.forEach(id => {
+        const element = document.getElementById(id);
+        element.classList.remove("show");
+    });
+
+    for (let i = 0; i <= current; i++) {
+        if (stages[i] && stages[i].parts) {
+            stages[i].parts.forEach(id => {
+                document.getElementById(id)
+                .classList.add("show");
+            });
+        }
+    }
+
+    document.getElementById("startBtn").disabled =
+        current !== -1;
+
+    document.getElementById("backBtn").disabled =
+        current <= 0;
+
+    document.getElementById("nextBtn").disabled =
+        current === 9;
+
+    document.getElementById("nextBtn").textContent =
+        current === 8 ? "Selesaikan ✓" : "Lanjut ▶";
+
+    renderList();
+}
+
+function renderList() {
+
+    const list = document.getElementById("stageList");
+    list.innerHTML = "";
+
+    stages.forEach((stage, index) => {
+
+        const button = document.createElement("button");
+
+        button.className = "stage-item";
+
+        if (index === current) {
+            button.classList.add("active");
+        }
+
+        if (index < current) {
+            button.classList.add("done");
+        }
+
+        button.textContent =
+            (index < current ? "✓ " : "") + stage.title;
+
+        button.onclick = () => {
+            if (index <= current + 1) {
+                current = index;
+                render();
+            }
+        };
+
+        list.appendChild(button);
+    });
+}
+
+function startBuild() {
+    current = 0;
+    render();
+}
+
+function nextStage() {
+    if (current < 9) {
+        current++;
+        render();
+    }
+}
+
+function previousStage() {
+    if (current > 0) {
+        current--;
+        render();
+    }
+}
+
+function resetBuild() {
+    current = -1;
+    render();
+}
+
+render();
+
+</script>
+
+</body>
+</html>
